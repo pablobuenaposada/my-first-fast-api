@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 
+from .crud import get_user
+
 app = FastAPI()
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    user = get_user("example@example.com")
+    return {"Hello": user.email}
 
 
 @app.get("/items/{item_id}")

@@ -12,6 +12,9 @@ format/check: venv
 	venv/bin/black --verbose app --check
 	venv/bin/isort --df -c app
 
+run/local: venv
+	python -m uvicorn app.main:app --reload
+
 docker/build:
 	docker build -t myimage .
 

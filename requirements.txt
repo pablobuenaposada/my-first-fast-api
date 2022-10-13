@@ -1,0 +1,5 @@
+SQLAlchemy
+passlib
+uvicorn
+fastapi
+uvicorn
