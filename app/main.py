@@ -17,19 +17,21 @@ def account(email=Header()):
     check_user(email)
     if not (account := get_account(email)):
         raise HTTPException(status_code=404, detail="account not found")
-
-    return {"balance": account.balance}
-
-
-@app.post("/transaction", status_code=201)
-def transaction_post(transaction: Transaction, email=Header()):
-    check_user(email)
-    check_user(transaction.account)
-    add_transaction(transaction.value, email, transaction.account)
-    return transaction
+    return {"id": account.id, "balance": account.balance}
 
 
 @app.get("/transaction")
 def transaction_get(email=Header()):
-    check_user(email)
-    return get_transactions(email)
+    # pagination?
+    user = check_user(email)
+    return get_transactions(user)
+
+
+@app.post("/transaction", status_code=201)
+def transaction_post(transaction: Transaction, email=Header()):
+    if email == transaction.email:
+        raise HTTPException(status_code=400, detail="origin and destination accounts (emails) are the same")
+    user_from = check_user(email)
+    user_to = check_user(transaction.email)
+    add_transaction(transaction.value, user_from, user_to)
+    return transaction

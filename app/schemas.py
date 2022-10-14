@@ -5,4 +5,4 @@ from pydantic.types import PositiveFloat
 
 class Transaction(BaseModel):
     value: PositiveFloat
-    account: EmailStr
+    email: EmailStr

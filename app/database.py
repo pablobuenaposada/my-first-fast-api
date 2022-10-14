@@ -46,6 +46,17 @@ transaction = Table(
 metadata_obj.create_all(engine)
 conn = engine.connect()
 
+### crap for foreing keys
+def _fk_pragma_on_connect(dbapi_con, con_record):
+    dbapi_con.execute("pragma foreign_keys=ON")
+
+
+from sqlalchemy import event
+
+event.listen(engine, "connect", _fk_pragma_on_connect)
+
+########################
+
 conn.execute(
     insert(user)
     .values(email="example@example.com", password="aaaa")
