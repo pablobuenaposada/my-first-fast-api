@@ -1,5 +1,6 @@
-from .database import account, engine, user, transaction
 from sqlalchemy.dialects.postgresql import insert
+
+from .database import account, engine, transaction, user
 
 
 def get_user(email):
@@ -16,7 +17,11 @@ def get_account(owner_email):
 
 def add_transaction(value, account_from, account_to):
     conn = engine.connect()
-    conn.execute(insert(transaction).values(value=value, account_from=account_from, account_to=account_to))
+    conn.execute(
+        insert(transaction).values(
+            value=value, account_from=account_from, account_to=account_to
+        )
+    )
 
 
 def get_transactions(email):

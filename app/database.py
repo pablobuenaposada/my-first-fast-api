@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy import (Column, ForeignKey, Integer, MetaData, Numeric, Table,
-                        UniqueConstraint, create_engine)
+                        create_engine)
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.types import TIMESTAMP
 from sqlalchemy_utils import EmailType, PasswordType
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
@@ -35,7 +38,10 @@ transaction = Table(
     Column("id", Integer, primary_key=True),
     Column("value", Numeric(scale=2), nullable=False),
     Column("account_from", Integer, ForeignKey("account.id"), nullable=False),
-    Column("account_to", Integer, ForeignKey("account.id"), nullable=False)
+    Column("account_to", Integer, ForeignKey("account.id"), nullable=False),
+    Column(
+        "created", TIMESTAMP(timezone=False), nullable=False, default=datetime.now()
+    ),
 )
 metadata_obj.create_all(engine)
 conn = engine.connect()

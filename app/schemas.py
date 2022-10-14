@@ -1,7 +1,7 @@
 from pydantic.main import BaseModel
+from pydantic.networks import EmailStr
 
 
-class Account(BaseModel):
-    id: int
-    owner: int
-    balance: int
+class Transaction(BaseModel):
+    value: float
+    account_to: EmailStr
