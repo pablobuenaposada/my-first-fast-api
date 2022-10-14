@@ -1,7 +1,8 @@
 from pydantic.main import BaseModel
 from pydantic.networks import EmailStr
+from pydantic.types import PositiveFloat
 
 
 class Transaction(BaseModel):
-    value: float
-    account_to: EmailStr
+    value: PositiveFloat
+    account: EmailStr

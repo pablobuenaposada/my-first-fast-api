@@ -6,22 +6,30 @@ from .schemas import Transaction
 app = FastAPI()
 
 
-@app.get("/account")
-def account(email=Header(default=None)):
+def check_user(email):
     if not (user := get_user(email)):
-        raise HTTPException(status_code=404, detail="user not found")
-    if not (account := get_account(user.email)):
+        raise HTTPException(status_code=404, detail=f"user {email} not found")
+    return user
+
+
+@app.get("/account")
+def account(email=Header()):
+    check_user(email)
+    if not (account := get_account(email)):
         raise HTTPException(status_code=404, detail="account not found")
 
     return {"balance": account.balance}
 
 
-@app.post("/transaction")
-def transaction(transaction: Transaction, email=Header(default=None)):
-    add_transaction(transaction.value, email, transaction.account_to)
+@app.post("/transaction", status_code=201)
+def transaction_post(transaction: Transaction, email=Header()):
+    check_user(email)
+    check_user(transaction.account)
+    add_transaction(transaction.value, email, transaction.account)
     return transaction
 
 
 @app.get("/transaction")
-def transaction2(email=Header(default=None)):
+def transaction_get(email=Header()):
+    check_user(email)
     return get_transactions(email)
