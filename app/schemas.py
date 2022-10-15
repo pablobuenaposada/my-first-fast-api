@@ -3,6 +3,6 @@ from pydantic.networks import EmailStr
 from pydantic.types import PositiveFloat
 
 
-class Transaction(BaseModel):
+class TransactionIn(BaseModel):
     value: PositiveFloat
     email: EmailStr

@@ -8,13 +8,13 @@ from .database import account, engine, transaction, user
 def get_user(email):
     conn = engine.connect()
     query = user.select().where(email == user.c.email)
-    return conn.execute(query).fetchone()
+    return conn.execute(query).one()
 
 
 def get_account(owner_email):
     conn = engine.connect()
     query = account.select().where(owner_email == account.c.owner)
-    return conn.execute(query).fetchone()
+    return conn.execute(query).one()
 
 
 def add_transaction(value, user_from, user_to):

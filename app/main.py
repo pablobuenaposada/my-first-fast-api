@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Header, HTTPException
 
 from .crud import add_transaction, get_account, get_transactions, get_user
-from .schemas import Transaction
+from .schemas import TransactionIn
 
 app = FastAPI()
 
@@ -28,7 +28,7 @@ def transaction_get(email=Header()):
 
 
 @app.post("/transaction", status_code=201)
-def transaction_post(transaction: Transaction, email=Header()):
+def transaction_post(transaction: TransactionIn, email=Header()):
     if email == transaction.email:
         raise HTTPException(
             status_code=400,
