@@ -30,7 +30,10 @@ def transaction_get(email=Header()):
 @app.post("/transaction", status_code=201)
 def transaction_post(transaction: Transaction, email=Header()):
     if email == transaction.email:
-        raise HTTPException(status_code=400, detail="origin and destination accounts (emails) are the same")
+        raise HTTPException(
+            status_code=400,
+            detail="origin and destination accounts (emails) are the same",
+        )
     user_from = check_user(email)
     user_to = check_user(transaction.email)
     add_transaction(transaction.value, user_from, user_to)

@@ -1,3 +1,5 @@
+from operator import or_
+
 from sqlalchemy.dialects.postgresql import insert
 
 from .database import account, engine, transaction, user
@@ -26,5 +28,7 @@ def add_transaction(value, user_from, user_to):
 
 def get_transactions(user):
     conn = engine.connect()
-    query = transaction.select().where(user.id == transaction.c.account_from)
+    query = transaction.select().filter(
+        or_(user.id == transaction.c.account_from, user.id == transaction.c.account_to)
+    )
     return conn.execute(query).fetchall()
