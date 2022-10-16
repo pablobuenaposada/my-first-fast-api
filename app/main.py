@@ -1,6 +1,9 @@
+import os
+
 from fastapi import FastAPI, Header, HTTPException
 
 from .crud import add_transaction, get_account, get_transactions, get_user
+from .database.demo_population import populate
 from .exceptions import NotSufficientFounds
 from .schemas import TransactionIn
 
@@ -11,6 +14,12 @@ def check_user(email):
     if not (user := get_user(email)):
         raise HTTPException(status_code=404, detail=f"user {email} not found")
     return user
+
+
+@app.on_event("startup")
+def startup_event():
+    if "TEST" in os.environ:
+        populate()
 
 
 @app.get("/account")

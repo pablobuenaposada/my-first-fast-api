@@ -13,7 +13,11 @@ format/check: venv
 	venv/bin/isort --df -c app
 
 run/local: venv
-	python -m uvicorn app.main:app --reload
+	TEST=true python -m uvicorn app.main:app --reload
+
+tests: venv
+	venv/bin/pip install -r requirements-tests.txt
+	PYTHONPATH=. venv/bin/pytest app/tests
 
 docker/build:
 	docker build -t myimage .

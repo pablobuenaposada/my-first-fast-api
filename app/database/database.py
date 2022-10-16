@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy.dialects.postgresql import insert
 
-from app.database.models import metadata_obj, user, account
+from app.database.models import account, metadata_obj, user
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
@@ -22,17 +21,3 @@ from sqlalchemy import event
 event.listen(engine, "connect", _fk_pragma_on_connect)
 
 ########################
-
-conn.execute(
-    insert(user)
-    .values(email="example@example.com", password="aaaa")
-    .on_conflict_do_nothing()
-)
-conn.execute(
-    insert(user)
-    .values(email="example2@example.com", password="aaaa")
-    .on_conflict_do_nothing()
-)
-
-conn.execute(insert(account).values(owner=1, balance=100).on_conflict_do_nothing())
-conn.execute(insert(account).values(owner=2, balance=100).on_conflict_do_nothing())

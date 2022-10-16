@@ -3,7 +3,7 @@ from operator import or_
 from sqlalchemy.dialects.postgresql import insert
 
 from .database.database import engine
-from .database.models import user, account, transaction
+from .database.models import account, transaction, user
 from .exceptions import NotSufficientFounds
 
 
