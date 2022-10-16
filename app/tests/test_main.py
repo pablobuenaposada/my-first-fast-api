@@ -134,3 +134,53 @@ class TestPostTransaction:
         assert response.json() == {"value": self.VALUE, "email": self.EMAIL2}
         assert get_account(account1_id).balance == Decimal(200)
         assert get_account(account2_id).balance == Decimal(100)
+
+    def test_same_accounts(self):
+        user1_id = create_user(self.EMAIL1)
+        create_account(user1_id)
+
+        response = client.post(
+            self.URL,
+            json={"value": self.VALUE, "email": self.EMAIL1},
+            headers={"email": self.EMAIL1},
+        )
+
+        assert response.status_code == 400
+        assert response.json() == {
+            "detail": "origin and destination accounts (emails) are the same"
+        }
+
+    def test_not_sufficient_founds(self):
+        user1_id = create_user(self.EMAIL1)
+        user2_id = create_user(self.EMAIL2)
+        account1_id = create_account(user1_id)
+        create_account(user2_id)
+
+        assert get_account(account1_id).balance < self.VALUE
+
+        response = client.post(
+            self.URL,
+            json={"value": self.VALUE, "email": self.EMAIL2},
+            headers={"email": self.EMAIL1},
+        )
+
+        assert response.status_code == 400
+        assert response.json() == {
+            "detail": "account from whatever@gmail.com doesn't have sufficient founds"
+        }
+
+    def test_no_headers(self):
+        response = client.post(
+            self.URL, json={"value": self.VALUE, "email": self.EMAIL1}
+        )
+
+        assert response.status_code == 422
+        assert response.json() == {
+            "detail": [
+                {
+                    "loc": ["header", "email"],
+                    "msg": "field required",
+                    "type": "value_error.missing",
+                }
+            ]
+        }

@@ -22,9 +22,6 @@ def get_account(owner_id):
 
 
 def add_transaction(value, email_from, email_to):
-    if email_from == email_to:
-        raise SameAccounts()
-
     try:
         user_from = get_user(email_from)
     except NoResultFound:
@@ -44,6 +41,9 @@ def add_transaction(value, email_from, email_to):
         account_to = get_account(user_to.id)
     except NoResultFound:
         raise AccountNotFound()
+
+    if email_from == email_to:
+        raise SameAccounts()
 
     if account_from.balance < value:
         raise NotSufficientFounds()
