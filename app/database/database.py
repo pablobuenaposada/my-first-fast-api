@@ -1,23 +1,21 @@
-from sqlalchemy import create_engine
+import os
 
-from app.database.models import account, metadata_obj, user
+from sqlalchemy import create_engine, event
+
+from app.database.models import metadata_obj
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    os.getenv("DATABASE", SQLALCHEMY_DATABASE_URL),
+    connect_args={"check_same_thread": False},
 )
-
 metadata_obj.create_all(engine)
-conn = engine.connect()
 
-### crap for foreing keys
+
+# special stuff for sqlite and foreign keys
 def _fk_pragma_on_connect(dbapi_con, con_record):
     dbapi_con.execute("pragma foreign_keys=ON")
 
 
-from sqlalchemy import event
-
 event.listen(engine, "connect", _fk_pragma_on_connect)
-
-########################

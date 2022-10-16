@@ -1,6 +1,7 @@
 import os
 
 from fastapi import FastAPI, Header, HTTPException
+from sqlalchemy.orm.exc import NoResultFound
 
 from .crud import add_transaction, get_account, get_transactions, get_user
 from .database.demo_population import populate
@@ -24,8 +25,13 @@ def startup_event():
 
 @app.get("/account")
 def account(email=Header()):
-    user = check_user(email)
-    if not (account := get_account(user.id)):
+    try:
+        user = check_user(email)
+    except NoResultFound:
+        raise HTTPException(status_code=404, detail="user not found")
+    try:
+        account = get_account(user.id)
+    except NoResultFound:
         raise HTTPException(status_code=404, detail="account not found")
     return {"id": account.id, "balance": account.balance}
 

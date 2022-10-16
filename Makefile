@@ -17,7 +17,7 @@ run/local: venv
 
 tests: venv
 	venv/bin/pip install -r requirements-tests.txt
-	PYTHONPATH=. venv/bin/pytest app/tests
+	DATABASE=sqlite:///./test.db PYTHONPATH=. venv/bin/pytest app/tests
 
 docker/build:
 	docker build -t myimage .
