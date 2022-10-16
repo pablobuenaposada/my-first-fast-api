@@ -1,10 +1,11 @@
 from operator import or_
 
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm.exc import NoResultFound
 
 from .database.database import engine
 from .database.models import account, transaction, user
-from .exceptions import NotSufficientFounds
+from .exceptions import AccountNotFound, NotSufficientFounds
 
 
 def get_user(email):
@@ -13,14 +14,18 @@ def get_user(email):
     return conn.execute(query).one()
 
 
-def get_account(owner):
+def get_account(owner_id):
     conn = engine.connect()
-    query = account.select().where(owner == account.c.owner)
+    query = account.select().where(owner_id == account.c.owner)
     return conn.execute(query).one()
 
 
 def add_transaction(value, user_from_id, user_to_id):
-    account_from = get_account(user_from_id)
+    try:
+        account_from = get_account(user_from_id)
+    except NoResultFound:
+        raise AccountNotFound()
+
     if account_from.balance < value:
         raise NotSufficientFounds()
 
