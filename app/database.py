@@ -29,7 +29,7 @@ account = Table(
     "account",
     metadata_obj,
     Column("id", Integer, primary_key=True),
-    Column("owner", EmailType, ForeignKey("user.email"), nullable=False, unique=True),
+    Column("owner", Integer, ForeignKey("user.id"), nullable=False, unique=True),
     Column("balance", Numeric(scale=2), default=0, nullable=False),
 )
 transaction = Table(
@@ -62,10 +62,14 @@ conn.execute(
     .values(email="example@example.com", password="aaaa")
     .on_conflict_do_nothing()
 )
-
 conn.execute(
-    insert(account).values(owner="example@example.com").on_conflict_do_nothing()
+    insert(user)
+    .values(email="example2@example.com", password="aaaa")
+    .on_conflict_do_nothing()
 )
+
+conn.execute(insert(account).values(owner=1, balance=100).on_conflict_do_nothing())
+conn.execute(insert(account).values(owner=2, balance=100).on_conflict_do_nothing())
 
 
 from sqlalchemy import func, select

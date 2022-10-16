@@ -1,0 +1,2 @@
+class NotSufficientFounds(Exception):
+    pass

@@ -4,5 +4,5 @@ from pydantic.types import PositiveFloat
 
 
 class TransactionIn(BaseModel):
-    value: PositiveFloat
+    value: PositiveFloat(decimal_places=2)
     email: EmailStr

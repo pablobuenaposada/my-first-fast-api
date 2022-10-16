@@ -3,6 +3,7 @@ from operator import or_
 from sqlalchemy.dialects.postgresql import insert
 
 from .database import account, engine, transaction, user
+from .exceptions import NotSufficientFounds
 
 
 def get_user(email):
@@ -11,19 +12,33 @@ def get_user(email):
     return conn.execute(query).one()
 
 
-def get_account(owner_email):
+def get_account(owner):
     conn = engine.connect()
-    query = account.select().where(owner_email == account.c.owner)
+    query = account.select().where(owner == account.c.owner)
     return conn.execute(query).one()
 
 
-def add_transaction(value, user_from, user_to):
-    conn = engine.connect()
-    conn.execute(
-        insert(transaction).values(
-            value=value, account_from=user_from.id, account_to=user_to.id
+def add_transaction(value, user_from_id, user_to_id):
+    account_from = get_account(user_from_id)
+    if account_from.balance < value:
+        raise NotSufficientFounds()
+
+    with engine.begin() as connection:
+        connection.execute(
+            account.update()
+            .where(account.c.id == user_from_id)
+            .values(balance=account.c.balance - value)
         )
-    )
+        connection.execute(
+            account.update()
+            .where(account.c.id == user_to_id)
+            .values(balance=account.c.balance + value)
+        )
+        connection.execute(
+            insert(transaction).values(
+                value=value, account_from=user_from_id, account_to=user_to_id
+            )
+        )
 
 
 def get_transactions(user):

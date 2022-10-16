@@ -1,4 +1,5 @@
 SQLAlchemy
+SQLAlchemy-Utils
 passlib
 uvicorn
 fastapi

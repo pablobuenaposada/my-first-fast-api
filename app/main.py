@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Header, HTTPException
 
 from .crud import add_transaction, get_account, get_transactions, get_user
+from .exceptions import NotSufficientFounds
 from .schemas import TransactionIn
 
 app = FastAPI()
@@ -14,8 +15,8 @@ def check_user(email):
 
 @app.get("/account")
 def account(email=Header()):
-    check_user(email)
-    if not (account := get_account(email)):
+    user = check_user(email)
+    if not (account := get_account(user.id)):
         raise HTTPException(status_code=404, detail="account not found")
     return {"id": account.id, "balance": account.balance}
 
@@ -36,5 +37,11 @@ def transaction_post(transaction: TransactionIn, email=Header()):
         )
     user_from = check_user(email)
     user_to = check_user(transaction.email)
-    add_transaction(transaction.value, user_from, user_to)
+    try:
+        add_transaction(transaction.value, user_from.id, user_to.id)
+    except NotSufficientFounds:
+        raise HTTPException(
+            status_code=400,
+            detail=f"account from {email} doesn't have sufficient founds",
+        )
     return transaction
