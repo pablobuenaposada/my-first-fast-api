@@ -2,7 +2,8 @@ from operator import or_
 
 from sqlalchemy.dialects.postgresql import insert
 
-from .database import account, engine, transaction, user
+from .database.database import engine
+from .database.models import user, account, transaction
 from .exceptions import NotSufficientFounds
 
 
