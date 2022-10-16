@@ -4,3 +4,11 @@ class NotSufficientFounds(Exception):
 
 class AccountNotFound(Exception):
     pass
+
+
+class UserNotFound(Exception):
+    pass
+
+
+class SameAccounts(Exception):
+    pass

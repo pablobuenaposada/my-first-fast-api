@@ -3,7 +3,6 @@ from decimal import Decimal
 from fastapi.testclient import TestClient
 
 from app.crud import get_account
-from app.database.database import engine
 from app.main import app
 from app.tests.utils import create_account, create_transaction, create_user
 

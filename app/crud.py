@@ -5,7 +5,8 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from .database.database import engine
 from .database.models import account, transaction, user
-from .exceptions import AccountNotFound, NotSufficientFounds
+from .exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
+                         UserNotFound)
 
 
 def get_user(email):
@@ -20,9 +21,27 @@ def get_account(owner_id):
     return conn.execute(query).one()
 
 
-def add_transaction(value, user_from_id, user_to_id):
+def add_transaction(value, email_from, email_to):
+    if email_from == email_to:
+        raise SameAccounts()
+
     try:
-        account_from = get_account(user_from_id)
+        user_from = get_user(email_from)
+    except NoResultFound:
+        raise UserNotFound()
+
+    try:
+        user_to = get_user(email_to)
+    except NoResultFound:
+        raise UserNotFound()
+
+    try:
+        account_from = get_account(user_from.id)
+    except NoResultFound:
+        raise AccountNotFound()
+
+    try:
+        account_to = get_account(user_to.id)
     except NoResultFound:
         raise AccountNotFound()
 
@@ -32,24 +51,36 @@ def add_transaction(value, user_from_id, user_to_id):
     with engine.begin() as connection:
         connection.execute(
             account.update()
-            .where(account.c.id == user_from_id)
+            .where(account.c.id == account_from.id)
             .values(balance=account.c.balance - value)
         )
         connection.execute(
             account.update()
-            .where(account.c.id == user_to_id)
+            .where(account.c.id == account_to.id)
             .values(balance=account.c.balance + value)
         )
         connection.execute(
             insert(transaction).values(
-                value=value, account_from=user_from_id, account_to=user_to_id
+                value=value, account_from=account_from.id, account_to=account_to.id
             )
         )
 
 
-def get_transactions(user):
+def get_transactions(email):
+    try:
+        user = get_user(email)
+    except NoResultFound:
+        raise UserNotFound()
+    try:
+        account = get_account(user.id)
+    except NoResultFound:
+        raise AccountNotFound()
+
     conn = engine.connect()
     query = transaction.select().filter(
-        or_(user.id == transaction.c.account_from, user.id == transaction.c.account_to)
+        or_(
+            account.id == transaction.c.account_from,
+            account.id == transaction.c.account_to,
+        )
     )
     return conn.execute(query).fetchall()
