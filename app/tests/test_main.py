@@ -19,7 +19,11 @@ class TestGetAccount:
         response = client.get(self.URL, headers={"email": self.EMAIL})
 
         assert response.status_code == 200
-        assert response.json() == {"id": user_id, "balance": 0.0}
+        assert response.json() == {
+            "id": response.json()["id"],
+            "owner": user_id,
+            "balance": 0.0,
+        }
 
     def test_no_account(self):
         create_user(self.EMAIL)
@@ -131,7 +135,13 @@ class TestPostTransaction:
         )
 
         assert response.status_code == 201
-        assert response.json() == {"value": self.VALUE, "email": self.EMAIL2}
+        assert response.json() == {
+            "id": response.json()["id"],
+            "value": self.VALUE,
+            "account_from": account1_id,
+            "account_to": account2_id,
+            "created": response.json()["created"],
+        }
         assert get_account(account1_id).balance == Decimal(200)
         assert get_account(account2_id).balance == Decimal(100)
 

@@ -7,7 +7,7 @@ from .crud import add_transaction, get_account, get_transactions, get_user
 from .database.demo_population import populate
 from .exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
                          UserNotFound)
-from .schemas import TransactionIn
+from .schemas import AccountOut, TransactionIn, TransactionOut
 
 app = FastAPI()
 
@@ -18,7 +18,7 @@ def startup_event():
         populate()
 
 
-@app.get("/account")
+@app.get("/account", response_model=AccountOut)
 def account(email=Header()):
     try:
         user = get_user(email)
@@ -29,7 +29,7 @@ def account(email=Header()):
     except NoResultFound:
         raise HTTPException(status_code=404, detail=f"account not found")
 
-    return {"id": account.id, "balance": account.balance}
+    return account
 
 
 @app.get("/transaction")
@@ -43,10 +43,10 @@ def transaction_get(email=Header()):
         raise HTTPException(status_code=404, detail=f"user {email} not found")
 
 
-@app.post("/transaction", status_code=201)
+@app.post("/transaction", status_code=201, response_model=TransactionOut)
 def transaction_post(transaction: TransactionIn, email=Header()):
     try:
-        add_transaction(transaction.value, email, transaction.email)
+        return add_transaction(transaction.value, email, transaction.email)
     except NotSufficientFounds:
         raise HTTPException(
             status_code=400,
@@ -61,5 +61,3 @@ def transaction_post(transaction: TransactionIn, email=Header()):
         raise HTTPException(status_code=400, detail=f"account from {email} not founds")
     except UserNotFound:
         raise HTTPException(status_code=404, detail=f"user not found")
-
-    return transaction

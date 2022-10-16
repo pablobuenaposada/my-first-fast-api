@@ -21,6 +21,12 @@ def get_account(owner_id):
     return conn.execute(query).one()
 
 
+def get_transaction(transaction_id):
+    conn = engine.connect()
+    query = transaction.select().where(transaction_id == transaction.c.id)
+    return conn.execute(query).one()
+
+
 def add_transaction(value, email_from, email_to):
     try:
         user_from = get_user(email_from)
@@ -59,11 +65,13 @@ def add_transaction(value, email_from, email_to):
             .where(account.c.id == account_to.id)
             .values(balance=account.c.balance + value)
         )
-        connection.execute(
+        result = connection.execute(
             insert(transaction).values(
                 value=value, account_from=account_from.id, account_to=account_to.id
             )
         )
+
+    return get_transaction(result.lastrowid)
 
 
 def get_transactions(email):
