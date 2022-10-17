@@ -1,10 +1,9 @@
 from decimal import Decimal
 
+from crud import get_account
 from fastapi.testclient import TestClient
-
-from app.crud import get_account
-from app.main import app
-from app.tests.utils import create_account, create_transaction, create_user
+from main import app
+from tests.utils import create_account, create_transaction, create_user
 
 client = TestClient(app)
 

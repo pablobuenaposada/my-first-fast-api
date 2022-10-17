@@ -1,12 +1,11 @@
 from operator import or_
 
+from database.database import engine
+from database.models import account, transaction, user
+from exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
+                        UserNotFound)
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm.exc import NoResultFound
-
-from .database.database import engine
-from .database.models import account, transaction, user
-from .exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
-                         UserNotFound)
 
 
 def get_user(email):

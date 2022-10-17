@@ -1,7 +1,6 @@
+from database.database import engine
+from database.models import account, user
 from sqlalchemy.dialects.postgresql import insert
-
-from app.database.database import engine
-from app.database.models import account, user
 
 
 def populate():

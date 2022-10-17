@@ -1,7 +1,6 @@
+from database.database import engine
+from database.models import account, transaction, user
 from sqlalchemy.dialects.postgresql import insert
-
-from app.database.database import engine
-from app.database.models import account, transaction, user
 
 
 def create_user(email, password="whatever"):

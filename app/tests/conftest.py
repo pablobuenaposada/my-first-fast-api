@@ -1,9 +1,8 @@
 import contextlib
 
 import pytest
-
-from app.database.database import engine
-from app.database.models import metadata_obj
+from database.database import engine
+from database.models import metadata_obj
 
 
 @pytest.fixture(autouse=True)

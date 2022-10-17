@@ -1,8 +1,7 @@
 import os
 
+from database.models import metadata_obj
 from sqlalchemy import create_engine, event
-
-from app.database.models import metadata_obj
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 
