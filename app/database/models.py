@@ -11,7 +11,9 @@ user = Table(
     metadata_obj,
     Column("id", Integer, primary_key=True),
     Column("email", EmailType, nullable=False, unique=True),
-    Column("password", PasswordType(schemes=["pbkdf2_sha512"]), nullable=False),
+    Column(
+        "password", PasswordType(schemes=["pbkdf2_sha512"]), nullable=False
+    ),  # not used actually
 )
 account = Table(
     "account",
