@@ -26,7 +26,7 @@ def account(email=Header()):
     try:
         account = get_account(user.id)
     except NoResultFound:
-        raise HTTPException(status_code=404, detail=f"account not found")
+        raise HTTPException(status_code=404, detail="account not found")
 
     return account
 
@@ -37,7 +37,7 @@ def transaction_get(email=Header()):
     try:
         return get_transactions(email)
     except AccountNotFound:
-        raise HTTPException(status_code=404, detail=f"account not found")
+        raise HTTPException(status_code=404, detail="account not found")
     except UserNotFound:
         raise HTTPException(status_code=404, detail=f"user {email} not found")
 
@@ -59,4 +59,4 @@ def transaction_post(transaction: TransactionIn, email=Header()):
     except AccountNotFound:
         raise HTTPException(status_code=400, detail=f"account from {email} not founds")
     except UserNotFound:
-        raise HTTPException(status_code=404, detail=f"user not found")
+        raise HTTPException(status_code=404, detail="user not found")

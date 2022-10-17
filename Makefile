@@ -15,14 +15,14 @@ format/check: venv
 	venv/bin/isort --df -c app
 
 run/local: venv
-	TEST=true venv/bin/uvicorn app.main:app --reload
+	TEST=true PYTHONPATH=app venv/bin/uvicorn app.main:app --reload
 
 tests: venv
 	venv/bin/pip install -r requirements-tests.txt
 	DATABASE=sqlite:///./test.db PYTHONPATH=app venv/bin/pytest app/tests
 
 docker/build:
-	docker build -t $(DOCKER_IMAGE) .
+	docker build --no-cache -t $(DOCKER_IMAGE) .
 
 docker/run/develop:
 	docker run --platform linux/amd64 -d -p 80:80 -v $(shell pwd)/app:/app $(DOCKER_IMAGE) /start-reload.sh

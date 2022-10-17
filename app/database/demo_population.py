@@ -7,21 +7,23 @@ def populate():
     connection = engine.connect()
 
     # users
-    connection.execute(
+    user1_id = connection.execute(
         insert(user)
-        .values(email="example@example.com", password="aaaa")
+        .values(email="user1@example.com", password="whocares")
         .on_conflict_do_nothing()
-    )
-    connection.execute(
+    ).lastrowid
+    user2_id = connection.execute(
         insert(user)
-        .values(email="example2@example.com", password="aaaa")
+        .values(email="user2@example.com", password="whocares")
         .on_conflict_do_nothing()
-    )
+    ).lastrowid
 
     # accounts
-    connection.execute(
-        insert(account).values(owner=1, balance=100).on_conflict_do_nothing()
-    )
-    connection.execute(
-        insert(account).values(owner=2, balance=100).on_conflict_do_nothing()
-    )
+    if user1_id != 0:
+        connection.execute(
+            insert(account).values(owner=user1_id, balance=100).on_conflict_do_nothing()
+        )
+    if user2_id != 0:
+        connection.execute(
+            insert(account).values(owner=user2_id, balance=100).on_conflict_do_nothing()
+        )
