@@ -4,7 +4,7 @@ venv:
 	python3.9 -m venv venv
 	venv/bin/pip install -r requirements.txt
 
-format:
+format: venv
 	venv/bin/pip install -r requirements-tests.txt
 	venv/bin/black app
 	venv/bin/isort app
