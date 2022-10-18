@@ -16,6 +16,7 @@ try:
 except OperationalError:
     pass
 
+
 # special stuff for sqlite and foreign keys
 def _fk_pragma_on_connect(dbapi_con, con_record):
     dbapi_con.execute("pragma foreign_keys=ON")

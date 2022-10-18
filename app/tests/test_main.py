@@ -175,7 +175,7 @@ class TestPostTransaction:
 
         assert response.status_code == 400
         assert response.json() == {
-            "detail": "account from whatever@gmail.com doesn't have sufficient founds"
+            "detail": f"account from {self.EMAIL1} doesn't have sufficient founds"
         }
 
     def test_no_headers(self):
@@ -190,6 +190,24 @@ class TestPostTransaction:
                     "loc": ["header", "email"],
                     "msg": "field required",
                     "type": "value_error.missing",
+                }
+            ]
+        }
+
+    def test_more_than_2_decimals(self):
+        response = client.post(
+            self.URL,
+            json={"value": 1.111, "email": self.EMAIL2},
+            headers={"email": self.EMAIL1},
+        )
+
+        assert response.status_code == 422
+        assert response.json() == {
+            "detail": [
+                {
+                    "loc": ["body", "value"],
+                    "msg": "No more than 2 decimals allowed",
+                    "type": "value_error",
                 }
             ]
         }
