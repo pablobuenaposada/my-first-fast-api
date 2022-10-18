@@ -1,7 +1,6 @@
-from datetime import datetime
-
-from sqlalchemy import Column, ForeignKey, Integer, MetaData, Numeric, Table
-from sqlalchemy.types import TIMESTAMP
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
+                        Numeric, Table)
+from sqlalchemy.sql import func
 from sqlalchemy_utils import EmailType, PasswordType
 
 metadata_obj = MetaData()
@@ -29,7 +28,5 @@ transaction = Table(
     Column("value", Numeric(scale=2), nullable=False),
     Column("account_from", Integer, ForeignKey("account.id"), nullable=False),
     Column("account_to", Integer, ForeignKey("account.id"), nullable=False),
-    Column(
-        "created", TIMESTAMP(timezone=False), nullable=False, default=datetime.now()
-    ),
+    Column("created", DateTime, default=func.now(), nullable=False),
 )
