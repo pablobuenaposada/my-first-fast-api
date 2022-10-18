@@ -11,13 +11,19 @@ from sqlalchemy.orm.exc import NoResultFound
 def get_user(email):
     conn = engine.connect()
     query = user.select().where(email == user.c.email)
-    return conn.execute(query).one()
+    try:
+        return conn.execute(query).one()
+    except NoResultFound:
+        raise UserNotFound()
 
 
 def get_account(owner_id):
     conn = engine.connect()
     query = account.select().where(owner_id == account.c.owner)
-    return conn.execute(query).one()
+    try:
+        return conn.execute(query).one()
+    except NoResultFound:
+        raise AccountNotFound()
 
 
 def get_transaction(transaction_id):

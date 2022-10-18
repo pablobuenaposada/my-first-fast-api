@@ -22,7 +22,7 @@ you should get a 404 with that url in your browser:
 ## Endpoints
 Documentation is available in `http://localhost/docs` but there's a simple explanation in here:
 
-The project comes pre-populated with 2 users (user1@example.com and user2@example.com) and each user has its own bank account, the email acts as authentication token to make it simpler,
+The project comes pre-populated with 2 users (`user1@example.com` and `user2@example.com`) and each user has its own bank account, the email acts as authentication token to make it simpler,
 so you need to send the email within the headers so the system knows who you are.
 
 Every account starts with a balance of 100.00 (sorry, no currency implemented)
@@ -47,7 +47,7 @@ example of sending 10 from user1@example.com account to user2@example.com
         "value": 10.0,
         "account_from": 2,
         "account_to": 1,
-        "created": "2022-10-17T21:18:05.154850"
+        "created": "2022-10-17T21:18:05"
     }
     ```
 
@@ -60,14 +60,14 @@ example of sending 10 from user1@example.com account to user2@example.com
             "value": 10.0,
             "account_from": 2,
             "account_to": 1,
-            "created": "2022-10-17T21:18:05.154850"
+            "created": "2022-10-17T21:18:05"
         },
         {
             "id": 2,
             "value": 33.0,
             "account_from": 1,
             "account_to": 2,
-            "created": "2022-10-17T21:18:05.154850"
+            "created": "2022-10-17T21:18:05"
         }
     ]
     ```

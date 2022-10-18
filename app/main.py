@@ -6,7 +6,6 @@ from exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
                         UserNotFound)
 from fastapi import FastAPI, Header, HTTPException
 from schemas import AccountOut, TransactionIn, TransactionOut
-from sqlalchemy.orm.exc import NoResultFound
 
 app = FastAPI()
 
@@ -21,11 +20,11 @@ def startup_event():
 def account(email=Header()):
     try:
         user = get_user(email)
-    except NoResultFound:
+    except UserNotFound:
         raise HTTPException(status_code=404, detail=f"user {email} not found")
     try:
         account = get_account(user.id)
-    except NoResultFound:
+    except AccountNotFound:
         raise HTTPException(status_code=404, detail="account not found")
 
     return account
@@ -33,7 +32,7 @@ def account(email=Header()):
 
 @app.get("/transaction")
 def transaction_get(email=Header()):
-    # pagination?
+    # would be nice to use pagination
     try:
         return get_transactions(email)
     except AccountNotFound:
