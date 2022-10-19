@@ -2,6 +2,8 @@ from decimal import Decimal
 from unittest.mock import ANY
 
 from crud import get_account
+from exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
+                        UserAlreadyIn, UserNotFound)
 from fastapi.testclient import TestClient
 from main import app
 from tests.utils import create_account, create_transaction, create_user
@@ -30,13 +32,13 @@ class TestGetAccount:
         response = client.get(self.URL, headers={"email": self.EMAIL})
 
         assert response.status_code == 404
-        assert response.json() == {"detail": "account not found"}
+        assert response.json() == {"detail": AccountNotFound.message}
 
     def test_no_user(self):
         response = client.get(self.URL, headers={"email": self.EMAIL})
 
         assert response.status_code == 404
-        assert response.json() == {"detail": f"user {self.EMAIL} not found"}
+        assert response.json() == {"detail": UserNotFound.message}
 
     def test_no_headers(self):
         response = client.get(self.URL)
@@ -87,7 +89,7 @@ class TestPostAccount:
             },
         )
         assert response.status_code == 409
-        assert response.json() == {"detail": "user already in"}
+        assert response.json() == {"detail": UserAlreadyIn.message}
 
 
 class TestGetTransaction:
@@ -127,13 +129,13 @@ class TestGetTransaction:
         response = client.get(self.URL, headers={"email": self.EMAIL})
 
         assert response.status_code == 404
-        assert response.json() == {"detail": "account not found"}
+        assert response.json() == {"detail": AccountNotFound.message}
 
     def test_no_user(self):
         response = client.get(self.URL, headers={"email": self.EMAIL})
 
         assert response.status_code == 404
-        assert response.json() == {"detail": f"user {self.EMAIL} not found"}
+        assert response.json() == {"detail": UserNotFound.message}
 
     def test_no_headers(self):
         response = client.get(self.URL)
@@ -193,9 +195,7 @@ class TestPostTransaction:
         )
 
         assert response.status_code == 400
-        assert response.json() == {
-            "detail": "origin and destination accounts (emails) are the same"
-        }
+        assert response.json() == {"detail": SameAccounts.message}
 
     def test_not_sufficient_founds(self):
         user1_id = create_user(self.EMAIL1)
@@ -212,9 +212,7 @@ class TestPostTransaction:
         )
 
         assert response.status_code == 400
-        assert response.json() == {
-            "detail": f"account from {self.EMAIL1} doesn't have sufficient founds"
-        }
+        assert response.json() == {"detail": NotSufficientFounds.message}
 
     def test_no_headers(self):
         response = client.post(
