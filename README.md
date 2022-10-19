@@ -41,7 +41,7 @@ Every account starts with a balance of 100.00 (sorry, no currency implemented)
 example of sending 10 from user1@example.com account to user2@example.com
 
     ```
-    curl --request POST --url http://localhost/transaction --header 'email: user1@example.com' --data '{"value": 10, "email": "user2@example.com"}'
+    curl --request POST --url http://localhost/transaction --header 'email: user1@example.com' --header 'Content-Type: application/json' --data '{"value": 10, "email": "user2@example.com"}'
     {
         "id": 1,
         "value": 10.0,
@@ -71,6 +71,16 @@ example of sending 10 from user1@example.com account to user2@example.com
         }
     ]
     ```
+
+### `POST /account` create new account
+```
+curl --request POST --url http://localhost/account --header 'Content-Type: application/json' --data '{"balance": 100, "password": "whatever", "email": "user14@example.com"}'
+{
+    "id": 8,
+    "owner": 11,
+    "balance": 100.0
+}
+```
 
 ## Run tests
 I haven't had time to make the test to run through docker, so in this case, they are going to be run locally with a virtual env.

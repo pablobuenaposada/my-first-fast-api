@@ -3,8 +3,9 @@ from operator import or_
 from database.database import engine
 from database.models import account, transaction, user
 from exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
-                        UserNotFound)
+                        UserAlreadyIn, UserNotFound)
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 
@@ -15,6 +16,18 @@ def get_user(email):
         return conn.execute(query).one()
     except NoResultFound:
         raise UserNotFound()
+
+
+def add_user_and_account(email, password, balance):
+    conn = engine.connect()
+    query = insert(user).values(email=email, password=password)
+    try:
+        user_id = conn.execute(query).lastrowid
+    except IntegrityError:
+        raise UserAlreadyIn()
+    query = insert(account).values(owner=user_id, balance=balance)
+    account_id = conn.execute(query).lastrowid
+    return get_account(account_id)
 
 
 def get_account(owner_id):

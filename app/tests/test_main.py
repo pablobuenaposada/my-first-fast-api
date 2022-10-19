@@ -1,4 +1,5 @@
 from decimal import Decimal
+from unittest.mock import ANY
 
 from crud import get_account
 from fastapi.testclient import TestClient
@@ -19,7 +20,7 @@ class TestGetAccount:
 
         assert response.status_code == 200
         assert response.json() == {
-            "id": response.json()["id"],
+            "id": ANY,
             "owner": user_id,
             "balance": 0.0,
         }
@@ -50,6 +51,43 @@ class TestGetAccount:
                 }
             ]
         }
+
+
+class TestPostAccount:
+    URL = "/account"
+    EMAIL = "whatever@gmail.com"
+    PASSWORD = "whocares"
+    VALUE = 100
+
+    def test_success(self):
+        response = client.post(
+            self.URL,
+            json={
+                "balance": self.VALUE,
+                "password": self.PASSWORD,
+                "email": self.EMAIL,
+            },
+        )
+
+        assert response.status_code == 201
+        assert response.json() == {
+            "balance": self.VALUE,
+            "id": ANY,
+            "owner": ANY,
+        }
+
+    def test_user_already_exists(self):
+        create_user(self.EMAIL)
+        response = client.post(
+            self.URL,
+            json={
+                "balance": self.VALUE,
+                "password": self.PASSWORD,
+                "email": self.EMAIL,
+            },
+        )
+        assert response.status_code == 409
+        assert response.json() == {"detail": "user already in"}
 
 
 class TestGetTransaction:
@@ -135,7 +173,7 @@ class TestPostTransaction:
 
         assert response.status_code == 201
         assert response.json() == {
-            "id": response.json()["id"],
+            "id": ANY,
             "value": self.VALUE,
             "account_from": account1_id,
             "account_to": account2_id,

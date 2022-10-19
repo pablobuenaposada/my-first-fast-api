@@ -1,11 +1,12 @@
 import os
 
-from crud import add_transaction, get_account, get_transactions, get_user
+from crud import (add_transaction, add_user_and_account, get_account,
+                  get_transactions, get_user)
 from database.demo_population import populate
 from exceptions import (AccountNotFound, NotSufficientFounds, SameAccounts,
-                        UserNotFound)
+                        UserAlreadyIn, UserNotFound)
 from fastapi import FastAPI, Header, HTTPException
-from schemas import AccountOut, TransactionIn, TransactionOut
+from schemas import AccountIn, AccountOut, TransactionIn, TransactionOut
 
 app = FastAPI()
 
@@ -28,6 +29,15 @@ def account(email=Header()):
         raise HTTPException(status_code=404, detail="account not found")
 
     return account
+
+
+@app.post("/account", status_code=201, response_model=AccountOut)
+def account_post(account: AccountIn):
+    """Both user and account would be created by this endpoint"""
+    try:
+        return add_user_and_account(account.email, account.password, account.balance)
+    except UserAlreadyIn as error:
+        raise HTTPException(status_code=409, detail=error.message)
 
 
 @app.get("/transaction")

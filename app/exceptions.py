@@ -12,3 +12,7 @@ class UserNotFound(Exception):
 
 class SameAccounts(Exception):
     pass
+
+
+class UserAlreadyIn(Exception):
+    message = "user already in"
